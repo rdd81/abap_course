@@ -23,10 +23,46 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
 
     out->write( message ).
 
+*Task 2. Calculator:
+*Implement method zif_abap_course_basics~calculator which receives 2 numbers and an operator (+, -, *, /)
+*and returns the result of calculation <param1> <operator> <param2>
+********************************************************************************************************
+
+    DATA result TYPE i.
+
+    TRY.
+
+        result = me->zif_abap_course_basics~calculator(
+                                                        iv_first_number = 5
+                                                        iv_second_number = 4
+                                                        iv_operator = '*' ).
+        out->write( result ).
+      CATCH cx_sy_zerodivide.
+        out->write(  `Error: Division by zero is not defined!` ).
+      CATCH cx_abap_invalid_value.
+        out->write(  `Error: Not a valid operation!` ).
+   ENDTRY.
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~calculator.
 
+    CASE iv_operator.
+        WHEN '+'.
+            rv_result = iv_first_number + iv_second_number.
+        WHEN '-'.
+            rv_result = iv_first_number - iv_second_number.
+        WHEN '*'.
+            rv_result = iv_first_number * iv_second_number.
+        WHEN '/'.
+            IF iv_second_number = 0. " Exceptions not used due to missing RAISING in the interface
+*                RAISE EXCEPTION TYPE cx_sy_zerodivide.
+            ELSE.
+                rv_result = iv_first_number / iv_second_number.
+            ENDIF.
+        WHEN OTHERS. " Exceptions not used due to missing RAISING in the interface
+*            RAISE EXCEPTION TYPE cx_abap_invalid_value.
+    ENDCASE.
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~date_parsing.
