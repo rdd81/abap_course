@@ -43,6 +43,16 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
         out->write(  `Error: Not a valid operation!` ).
    ENDTRY.
 
+*Task 3. Fizz Buzz:
+*Implement method zif_abap_course_basics~fizz_buzz that returns a string with the numbers from 1 to 100.
+*But for multiples of three writes “Fizz” instead of the number and for the multiples of five writes “Buzz”.
+*For numbers which are multiples of both three and five it writes “FizzBuzz”.
+***********************************************************************************************************
+
+   DATA(sequence) = me->zif_abap_course_basics~fizz_buzz(  ).
+
+   out->write( sequence ).
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~calculator.
@@ -69,6 +79,31 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~fizz_buzz.
+
+    CONSTANTS max_count TYPE i VALUE 100.
+
+    DATA word TYPE STRING.
+
+    rv_result = ''.
+
+    DO max_count TIMES.
+
+        CLEAR word.
+
+        IF sy-index mod 3 = 0 AND sy-index mod 5 = 0.
+            word = 'FizzBuzz'.
+        ELSEIF sy-index mod 5 = 0.
+            word = 'Buzz'.
+        ELSEIF sy-index mod 3 = 0.
+            word = 'Fizz'.
+        ELSE.
+            word = sy-index.
+        ENDIF.
+
+        rv_result = rv_result && word && | |.
+
+    ENDDO.
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~get_current_date_time.
