@@ -53,6 +53,15 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
 
    out->write( sequence ).
 
+*Task 5. Scrabble Score:
+*Implement method zif_abap_course_basics~scrabble_score that receives a string and returns it’s
+*Scrabble score. Use the letter position in English alphabet as score value. A=1 , B-2, etc...
+***********************************************************************************************
+
+    DATA(score) = me->zif_abap_course_basics~scrabble_score( 'RADKA' ).
+
+    out->write( score ).
+
 *Task 6. Current date and time:
 *Implement method zif_abap_course_basics~get_current_date_time that returns the current date and time as timestamp.
 *Use statement GET TIME STAMP FIELD DATA(lv_timestamp) to read the current time.
@@ -130,5 +139,56 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~scrabble_score.
+
+    CONSTANTS correction TYPE i VALUE 64. " 64 = 65 - 1, 'ASCII' = 65 in ASCII
+
+    DATA score TYPE i VALUE 0.
+    DATA current_letter TYPE c LENGTH 1.
+    DATA word TYPE String.
+    DATA offset TYPE i.
+    DATA number TYPE i.
+
+    word = to_upper( iv_word ).
+
+    DO strlen( word ) TIMES.
+
+        offset = sy-index - 1.
+
+        current_letter = substring( val = word off = offset len = 1 ).
+
+        CASE current_letter.
+          WHEN 'A'. score += 1.
+          WHEN 'B'. score += 2.
+          WHEN 'C'. score += 3.
+          WHEN 'D'. score += 4.
+          WHEN 'E'. score += 5.
+          WHEN 'F'. score += 6.
+          WHEN 'G'. score += 7.
+          WHEN 'H'. score += 8.
+          WHEN 'I'. score += 9.
+          WHEN 'J'. score += 10.
+          WHEN 'K'. score += 11.
+          WHEN 'L'. score += 12.
+          WHEN 'M'. score += 13.
+          WHEN 'N'. score += 14.
+          WHEN 'O'. score += 15.
+          WHEN 'P'. score += 16.
+          WHEN 'Q'. score += 17.
+          WHEN 'R'. score += 18.
+          WHEN 'S'. score += 19.
+          WHEN 'T'. score += 20.
+          WHEN 'U'. score += 21.
+          WHEN 'V'. score += 22.
+          WHEN 'W'. score += 23.
+          WHEN 'X'. score += 24.
+          WHEN 'Y'. score += 25.
+          WHEN 'Z'. score += 26.
+          WHEN OTHERS. " do nothing
+        ENDCASE.
+
+    ENDDO.
+
+    rv_result = score.
+
   ENDMETHOD.
 ENDCLASS.
