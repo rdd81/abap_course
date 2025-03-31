@@ -53,6 +53,19 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
 
    out->write( sequence ).
 
+*Task 4. Date Parsing:
+*Implement method zif_abap_course_basics~date_parsing that receives a string, containing a date, formatted in one of two ways:
+*With written month: 12 April 2017
+*With number for month: 12 4 2017
+*Parse this string and return a date variable with the result
+*****************************************************************************************************************************
+
+    DATA date TYPE d.
+
+    date = me->zif_abap_course_basics~date_parsing( '12 April 2017' ).
+
+    out->write( date ).
+
 *Task 5. Scrabble Score:
 *Implement method zif_abap_course_basics~scrabble_score that receives a string and returns it’s
 *Scrabble score. Use the letter position in English alphabet as score value. A=1 , B-2, etc...
@@ -94,6 +107,41 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~date_parsing.
+
+    DATA(day) = segment( val = iv_date sep = ` ` index = 1 ).
+    DATA(month_text) = segment( val = iv_date sep = ` ` index = 2 ).
+    DATA(year) = segment( val = iv_date sep = ` ` index = 3 ).
+
+    CASE month_text.
+        WHEN 'January'.
+            month_text = '1'.
+        WHEN 'February'.
+            month_text = '2'.
+        WHEN 'March'.
+            month_text = '3'.
+        WHEN 'April'.
+            month_text = '4'.
+        WHEN 'May'.
+            month_text = '5'.
+        WHEN 'June'.
+            month_text = '6'.
+        WHEN 'July'.
+            month_text = '7'.
+        WHEN 'August'.
+            month_text = '8'.
+        WHEN 'September'.
+            month_text = '9'.
+        WHEN 'October'.
+            month_text = '10'.
+        WHEN 'November'.
+            month_text = '11'.
+        WHEN 'December'.
+            month_text = '12'.
+        WHEN OTHERS. "do nothing
+    ENDCASE.
+
+    rv_result = CONV d( |{ year }{ month_text WIDTH = 2  PAD = '0' ALIGN = RIGHT }{ day WIDTH = 2  PAD = '0' ALIGN = RIGHT }| ).
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~fizz_buzz.
