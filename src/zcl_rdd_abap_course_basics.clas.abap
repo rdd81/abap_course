@@ -146,7 +146,6 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
     DATA current_letter TYPE c LENGTH 1.
     DATA word TYPE String.
     DATA offset TYPE i.
-    DATA number TYPE i.
 
     word = to_upper( iv_word ).
 
