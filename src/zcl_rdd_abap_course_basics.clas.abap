@@ -53,6 +53,15 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
 
    out->write( sequence ).
 
+*Task 6. Current date and time:
+*Implement method zif_abap_course_basics~get_current_date_time that returns the current date and time as timestamp.
+*Use statement GET TIME STAMP FIELD DATA(lv_timestamp) to read the current time.
+*******************************************************************************************************************
+
+    DATA(result_ts) = me->zif_abap_course_basics~get_current_date_time( ).
+
+*    out->write( |{ result_ts TIMESTAMP = ISO } | ).
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~calculator.
@@ -107,6 +116,7 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~get_current_date_time.
+    GET TIME STAMP FIELD rv_result.
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~hello_world.
