@@ -84,6 +84,73 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
 
 *    out->write( |{ result_ts TIMESTAMP = ISO } | ).
 
+*Task 7. Internal Tables:
+*Implement method zif_abap_course_basics~internal_tables that covers the following requirements.
+*Create new database table name ZTRAVEL_### (Replace ### with your identification).
+*Copy database /dmo/travel table structure to ZTRAVEL_###.
+*Execute the following code:
+*SELECT * FROM ZTRAVEL_### INTO TABLE @DATA(lt_ztravel).
+*    DELETE ZTRAVEL_### FROM TABLE @lt_ztravel.
+*    COMMIT WORK AND WAIT.
+*
+*    INSERT ZTRAVEL_### FROM
+*  ( SELECT FROM /dmo/travel
+*      FIELDS uuid( )          AS travel_uuid,
+*             travel_id        AS travel_id,
+*             agency_id        AS agency_id,
+*             customer_id      AS customer_id,
+*             begin_date       AS begin_date,
+*             end_date         AS end_date,
+*             booking_fee      AS booking_fee,
+*             total_price      AS total_price,
+*             currency_code    AS currency_code,
+*             description      AS description,
+*             CASE status
+*           WHEN 'B' THEN  'A'  " ACCEPTED
+*           WHEN 'X'  THEN 'X' " CANCELLED
+*               ELSE 'O'         " open
+*          END                 AS overall_status,
+*             createdby        AS createdby,
+*             createdat        AS createdat,
+*             lastchangedby    AS last_changed_by,
+*             lastchangedat    AS last_changed_at
+*      ORDER BY travel_id ).
+*
+*    COMMIT WORK AND WAIT.
+*
+*Method must skip this step if ZTRAVEL_### is not empty!
+*Select all records in table ZTRAVEL_### into an internal table. Do not use any other OpenSQL. Execute the following operations on the internal table:
+*•   The method should export a table containing all travels(TRAVEL_ID) for agency ( AGENCY_ID) 070001 with booking fee of 20 JPY (BOOKING_FEE CURRENCY_CODE)
+*•   The method should export a table containing all travels with a price (TOTAL_PRICE) higher than 2000 USD. Hint: Currencies are convertible
+*•   Delete all rows of the internal table with prices not in Euro, sort them by cheapest price and earliest date.
+*•   Export a table containing the TRAVEL_ID of the first ten rows to screen.
+*************************************************************************************************************************************************************
+
+    DATA et1 TYPE zif_abap_course_basics=>ltty_travel_id.
+    DATA et2 TYPE zif_abap_course_basics=>ltty_travel_id.
+    DATA et3 TYPE zif_abap_course_basics=>ltty_travel_id.
+
+    me->zif_abap_course_basics~internal_tables(
+      IMPORTING
+        et_travel_ids_task7_1 = et1
+        et_travel_ids_task7_2 = et2
+        et_travel_ids_task7_3 = et3 ).
+
+*    LOOP AT et1 INTO DATA(row1).
+*        out->write( data = row1
+*                    name = `Task 7.1:` ).
+*    ENDLOOP.
+*
+*    LOOP AT et2 INTO DATA(row2).
+*        out->write( data = row2
+*                    name = `Task 7.2:` ).
+*    ENDLOOP.
+*
+*    LOOP AT et3 INTO DATA(row3).
+*        out->write( data = row3
+*                    name = `Task 7.3 and 7.4:` ).
+*    ENDLOOP.
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~calculator.
@@ -170,6 +237,7 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
 
     ENDDO.
 
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~get_current_date_time.
@@ -181,6 +249,82 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~internal_tables.
+
+    DATA lt_ztravel TYPE TABLE OF ZTRAVEL_RDD.
+    DATA ls_travel TYPE ztravel_rdd.
+    DATA lv_counter TYPE i.
+
+    SELECT * FROM ZTRAVEL_RDD INTO TABLE @lt_ztravel.
+
+    IF lt_ztravel IS INITIAL.
+
+        DELETE ZTRAVEL_RDD FROM TABLE @lt_ztravel.
+
+        INSERT ZTRAVEL_RDD FROM (
+            SELECT FROM /dmo/travel
+            FIELDS uuid( )          AS travel_uuid,
+                travel_id        AS travel_id,
+                agency_id        AS agency_id,
+                customer_id      AS customer_id,
+                begin_date       AS begin_date,
+                end_date         AS end_date,
+                booking_fee      AS booking_fee,
+                total_price      AS total_price,
+                currency_code    AS currency_code,
+                description      AS description,
+            CASE status
+                WHEN 'B' THEN  'A'  " ACCEPTED
+                WHEN 'X'  THEN 'X' " CANCELLED
+                ELSE 'O'         " open
+            END                 AS overall_status,
+                createdby        AS createdby,
+                createdat        AS createdat,
+                lastchangedby    AS last_changed_by,
+                lastchangedat    AS last_changed_at
+        ORDER BY travel_id ).
+
+        COMMIT WORK AND WAIT.
+
+    ENDIF.
+
+    LOOP AT lt_ztravel INTO ls_travel
+                       WHERE agency_id = '070001'
+                       AND CURRENCY_CODE = 'JPY'
+                       AND BOOKING_FEE = 20.
+
+        APPEND VALUE #( travel_id = ls_travel-travel_id ) TO et_travel_ids_task7_1.
+
+    ENDLOOP.
+
+    CLEAR ls_travel.
+
+    LOOP AT lt_ztravel INTO ls_travel
+                       WHERE TOTAL_PRICE > 2000
+                       AND CURRENCY_CODE = 'USD'.
+
+        APPEND VALUE #( travel_id = ls_travel-travel_id ) TO et_travel_ids_task7_2.
+
+    ENDLOOP.
+
+    CLEAR ls_travel.
+
+    DELETE lt_ztravel WHERE currency_code <> 'EUR'.
+    SORT lt_ztravel BY total_price ASCENDING begin_date ASCENDING.
+
+    lv_counter = 0.
+
+    LOOP AT lt_ztravel INTO ls_travel.
+
+        APPEND VALUE #( travel_id = ls_travel-travel_id ) TO et_travel_ids_task7_3.
+
+        lv_counter = lv_counter + 1.
+
+        IF lv_counter = 10.
+            EXIT.
+        ENDIF.
+
+    ENDLOOP.
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~open_sql.
