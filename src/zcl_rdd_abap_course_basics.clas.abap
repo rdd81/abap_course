@@ -151,6 +151,63 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
 *                    name = `Task 7.3 and 7.4:` ).
 *    ENDLOOP.
 
+*Task 8. OpenSQL:
+*Implement zif_abap_course_basics~open_sql and achieve same results as task 7, but use only OpenSQL to filter the data,
+*do not get any unneeded information from the database, do not delete/change any data in the database.
+***********************************************************************************************************************
+
+    DATA et_1 TYPE zif_abap_course_basics=>ltty_travel_id.
+    DATA et_2 TYPE zif_abap_course_basics=>ltty_travel_id.
+    DATA et_3 TYPE zif_abap_course_basics=>ltty_travel_id.
+
+    me->zif_abap_course_basics~open_sql(
+      IMPORTING
+        et_travel_ids_task8_1 = et_1
+        et_travel_ids_task8_2 = et_2
+        et_travel_ids_task8_3 = et_3 ).
+
+*    LOOP AT et_1 INTO DATA(row_1).
+*        out->write( data = row_1
+*                    name = `Task 7.1:` ).
+*    ENDLOOP.
+*
+*    LOOP AT et_2 INTO DATA(row_2).
+*        out->write( data = row_2
+*                    name = `Task 7.2:` ).
+*    ENDLOOP.
+*
+*    LOOP AT et_3 INTO DATA(row_3).
+*        out->write( data = row_3
+*                    name = `Task 7.3 and 7.4:` ).
+*    ENDLOOP.
+
+    SORT et1 BY travel_id.
+    SORT et_1 BY travel_id.
+
+    IF et1 = et_1.
+        out->write( `Task 7.1 and 8.1 results are equal.` ).
+    ELSE.
+        out->write( `Task 7.1 and 8.1 results differ.` ).
+    ENDIF.
+
+    SORT et2 BY travel_id.
+    SORT et_2 BY travel_id.
+
+    IF et2 = et_2.
+      out->write( `Task 7.2 and 8.2 results are equal.` ).
+    ELSE.
+      out->write( `Task 7.2 and 8.2 results differ.` ).
+    ENDIF.
+
+    SORT et3 BY travel_id.
+    SORT et_3 BY travel_id.
+
+    IF et3 = et_3.
+      out->write( `Task 7.3/7.4 and 8.3 results are equal.` ).
+    ELSE.
+      out->write( `Task 7.3/7.4 and 8.3 results differ.` ).
+    ENDIF.
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~calculator.
@@ -328,6 +385,30 @@ CLASS zcl_rdd_abap_course_basics IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~open_sql.
+
+    SELECT
+    FROM ZTRAVEL_RDD
+    FIELDS travel_id
+    WHERE agency_id = '070001'
+    AND CURRENCY_CODE = 'JPY'
+    AND BOOKING_FEE = 20
+    INTO TABLE @et_travel_ids_task8_1.
+
+    SELECT
+    FROM ZTRAVEL_RDD
+    FIELDS travel_id
+    WHERE TOTAL_PRICE > 2000
+    AND CURRENCY_CODE = 'USD'
+    INTO TABLE @et_travel_ids_task8_2.
+
+    SELECT
+    FROM ZTRAVEL_RDD
+    FIELDS travel_id
+    WHERE currency_code = 'EUR'
+    ORDER BY total_price ASCENDING, begin_date ASCENDING
+    INTO TABLE @et_travel_ids_task8_3
+    UP TO 10 ROWS.
+
   ENDMETHOD.
 
   METHOD zif_abap_course_basics~scrabble_score.
